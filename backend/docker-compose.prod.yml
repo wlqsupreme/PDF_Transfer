@@ -1,0 +1,37 @@
+services:
+  api_gateway:
+    build: ./api_gateway
+    ports:
+      - "80:5000"  # 映射到80端口，便于访问
+    restart: always
+    depends_on:
+      - marker_service
+      - paddle_service
+    environment:
+      - FLASK_ENV=production
+
+  marker_service:
+    build: ./marker_service
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: always
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+
+  paddle_service:
+    build: ./paddle_service
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: always
+    environment:
+      - CUDA_VISIBLE_DEVICES=0

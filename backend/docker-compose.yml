@@ -1,0 +1,31 @@
+services:
+  api_gateway:
+    build: ./api_gateway
+    ports:
+      - "5000:5000"
+    restart: always
+    depends_on:
+      - marker_service
+      - paddle_service
+
+  marker_service:
+    build: ./marker_service
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: always
+
+  paddle_service:
+    build: ./paddle_service
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    restart: always
